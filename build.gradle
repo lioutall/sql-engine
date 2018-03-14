@@ -1,0 +1,16 @@
+group 'com.tollge'
+version '0.1.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'io.netty:netty-common:4.1.15.Final'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
