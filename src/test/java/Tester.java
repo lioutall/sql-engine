@@ -18,6 +18,9 @@ public class Tester {
         params.put("b", "bb");
         params.put("c", "c");
         params.put("list", Arrays.asList("1","1a","1b"));
-        System.out.println(SqlTemplate.generateSQL("test.testIf", params));
+//        System.out.println(SqlTemplate.generateSQL("test.testIf", params));
+//        System.out.println(SqlTemplate.generateSQL("test.testFor", params));
+//        System.out.println(SqlTemplate.generateSQL("test.testSubMain", params));
+        System.out.println(SqlTemplate.generateSQL("test.testNesting", params));
     }
 }

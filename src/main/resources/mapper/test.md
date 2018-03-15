@@ -5,9 +5,9 @@ select *
 from tab
 where a = #a#
 :if b='bb' ::
-and b = #b#
+and b=#b#
 :else
-and b != #b#
+and b!=#b#
 if:
 ```
 
@@ -19,7 +19,7 @@ from tab
 where a = #a#
 and b in (
 :for l:list :with ,::
- #l#
+#l#
 for:
 )
 ```
