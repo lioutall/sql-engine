@@ -1,5 +1,5 @@
 # sql-engine
-简单的sql模板引擎, 非常小, 基本不需要引入外部包(你改几行代码就可以不引入任何外部包),首次加载sql时需要语法运算,后续调用基本无性能开销.    
+简单的sql模板引擎, 非常小, 基本不需要引入外部包(你改几行代码就可以不引入任何外部包),首次sql加载时需要语法运算,后续调用基本无性能开销.    
 主要功能如下:
 
 #### sql模板
@@ -61,7 +61,7 @@ params:  [a, bbb]
 ```
 ## IF条件
 IF条件引擎是用的开源的[jexparser](https://gitee.com/drinkjava2/jexparser)   
-
+它只有3个类, 直接copy到工程里了
 
 目前支持:
 ```
@@ -75,7 +75,7 @@ startWith  startWithIgnoreCase  endWith  endWithIgnoreCase
 
 ### 使用
 sql模板目录: mapper   
-sql模板文件后缀: .md  (是的,就是markdown)
+sql模板文件后缀: .md  (是的,就是markdown)   
 模板文件构成:
 ```
 ## testIf      ->   sql的key
