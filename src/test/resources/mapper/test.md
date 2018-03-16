@@ -4,7 +4,7 @@
 select *
 from tab
 where a = #a#
-:if b='bb' ::
+:if b ISNOTNULL::
 and b = #b#
 :else
 and b != #b#

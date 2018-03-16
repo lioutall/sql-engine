@@ -63,7 +63,7 @@ public class ExParser {
 		functionMap.put("STARTWITHIGNORECASE", 6);
 		functionMap.put("ENDWITH", 6);
 		functionMap.put("ENDWITHIGNORECASE", 6);
-		functionMap.put("IS", 6);
+		functionMap.put("ISNOTNULL", 6);
 		functionMap.put(">", 8);
 		functionMap.put("<", 8);
 		functionMap.put("=", 8);
@@ -261,7 +261,8 @@ public class ExParser {
 			if (presetValues != null && presetValues.containsKey(valueUpcase))
 				item.guess(presetValues.get(valueUpcase));
 			if (item.type == 'U')// still not found
-				throw new ExParserException("Unrecognized expression near '" + valueUpcase + "'");
+//				throw new ExParserException("Unrecognized expression near '" + valueUpcase + "'");
+				item.guess(null);
 		}
 		if (item.subItems != null)
 			for (ExpItem t : item.subItems)

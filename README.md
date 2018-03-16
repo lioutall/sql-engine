@@ -72,6 +72,7 @@ or  and  not
 equals  equalsIgnoreCase  contains  containsIgnoreCase  
 startWith  startWithIgnoreCase  endWith  endWithIgnoreCase
 ```
+在它基础上新增了一个关键字: isNotNull, 用法见test样例
 
 ### 使用
 sql模板目录: mapper   

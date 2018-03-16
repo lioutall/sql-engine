@@ -314,11 +314,11 @@ public class ExParserUtils {
 			} else
 				throwExp(f);
 			deleteItem(last, next);
-		} else if ("IS".equals(f)) {
-			if (last != null && nextType == 'N' && next.value == null) {
+		} else if ("ISNOTNULL".equals(f)) {
+			if (last != null) {
 				func.type = 'B';
-				func.value = null == last.value;
-				deleteItem(last, next);
+				func.value = null != last.value;
+				deleteItem(last);
 			} else
 				throwExp(f);
 		}
