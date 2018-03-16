@@ -5,9 +5,9 @@ select *
 from tab
 where a = #a#
 :if b='bb' ::
-and b=#b#
+and b = #b#
 :else
-and b!=#b#
+and b != #b#
 if:
 ```
 

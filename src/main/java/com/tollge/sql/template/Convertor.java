@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Convertor {
 
@@ -33,15 +34,12 @@ public class Convertor {
         convert(temp);
 
         // 全部转化成Grammar
-        List<Grammar> result = new ArrayList<>();
-        for (Object o : temp) {
-            result.add((Grammar) o);
-        }
-        return result;
+        return temp.stream().map(o -> (Grammar) o).collect(Collectors.toList());
     }
 
     private static void convert(List<Object> temp) {
         boolean hasReplace = false;
+        // filter 所有Grammar子类
         for (Class<?> g : Grammar.class.getDeclaredClasses()) {
             try {
                 Field field = g.getDeclaredField("BASE_KEYS");
@@ -76,78 +74,27 @@ public class Convertor {
 
         // 合并Text和Grammar
         for (int i = temp.size() - 1; i > 0; i--) {
-            if (temp.get(i) instanceof BaseKeyValue && ((BaseKeyValue) temp.get(i)).getBaseKey() == BaseKey.TEXT) {
-                Grammar.Text t = new Grammar.Text();
-                t.put(((BaseKeyValue) temp.get(i)).getValue());
-                if (temp.get(i - 1).getClass().getSuperclass().equals(Grammar.class)) {
+            if (temp.get(i).equals(BaseKey.MIX)) {
+                if (temp.get(i - 1).equals(BaseKey.MIX)) {
                     hasReplace = true;
-                    if (temp.get(i - 1) instanceof Grammar.Grammars) {
-                        ((Grammar.Grammars) temp.get(i - 1)).addAfter(t);
-                        temp.remove(i);
-                        continue;
-                    } else {
-                        Grammar.Grammars gs = new Grammar.Grammars();
-                        gs.put((Grammar) temp.get(i - 1), t);
-                        temp.set(i - 1, gs);
-                        temp.remove(i);
-                        continue;
-                    }
+                    Grammar g1 = generateGrammar(temp.get(i - 1));
+                    Grammar g2 = generateGrammar(temp.get(i));
+                    Grammar.Grammars gs = new Grammar.Grammars();
+                    gs.put(g1, g2);
+                    temp.set(i - 1, gs);
+                    temp.remove(i);
                 } else if (i > 1 && temp.get(i - 1) instanceof BaseKeyValue && ((BaseKeyValue) temp.get(i - 1)).getBaseKey() == BaseKey.BLANK
-                        && temp.get(i - 2).getClass().getSuperclass().equals(Grammar.class)) {
+                        && temp.get(i - 2).equals(BaseKey.MIX)) {
+                    hasReplace = true;
                     Grammar.Text blank = new Grammar.Text();
                     blank.put(" ");
-                    hasReplace = true;
-                    if (temp.get(i - 2) instanceof Grammar.Grammars) {
-                        ((Grammar.Grammars) temp.get(i - 2)).addAfter(blank);
-                        ((Grammar.Grammars) temp.get(i - 2)).addAfter(t);
-                        temp.remove(i);
-                        temp.remove(--i);
-                        continue;
-                    } else {
-                        Grammar.Grammars gs = new Grammar.Grammars();
-                        gs.put((Grammar) temp.get(i - 2), blank, t);
-                        temp.set(i - 2, gs);
-                        temp.remove(i);
-                        temp.remove(--i);
-                        continue;
-                    }
-                }
-            }
-
-            if (temp.get(i).getClass().getSuperclass().equals(Grammar.class)) {
-                if(temp.get(i - 1) instanceof BaseKeyValue && ((BaseKeyValue) temp.get(i - 1)).getBaseKey() == BaseKey.TEXT) {
-                    Grammar.Text t = new Grammar.Text();
-                    t.put(((BaseKeyValue) temp.get(i - 1)).getValue());
-                    hasReplace = true;
-                    if (temp.get(i) instanceof Grammar.Grammars) {
-                        ((Grammar.Grammars) temp.get(i)).addBefore(t);
-                        temp.remove(i - 1);
-                    } else {
-                        Grammar.Grammars gs = new Grammar.Grammars();
-                        gs.put(t, (Grammar) temp.get(i));
-                        temp.set(i - 1, gs);
-                        temp.remove(i);
-                    }
-                } else if(i>1 && temp.get(i - 1) instanceof BaseKeyValue && ((BaseKeyValue) temp.get(i - 1)).getBaseKey() == BaseKey.BLANK
-                        && temp.get(i - 2) instanceof BaseKeyValue && ((BaseKeyValue) temp.get(i - 2)).getBaseKey() == BaseKey.TEXT) {
-                    Grammar.Text t = new Grammar.Text();
-                    t.put(((BaseKeyValue) temp.get(i - 2)).getValue());
-                    Grammar.Text blank = new Grammar.Text();
-                    blank.put(" ");
-                    hasReplace = true;
-                    if (temp.get(i) instanceof Grammar.Grammars) {
-                        ((Grammar.Grammars) temp.get(i)).addBefore(blank);
-                        ((Grammar.Grammars) temp.get(i)).addBefore(t);
-                        temp.remove(i - 1);
-                        temp.remove(i - 2);
-                        i--;
-                    } else {
-                        Grammar.Grammars gs = new Grammar.Grammars();
-                        gs.put(t, blank, (Grammar) temp.get(i));
-                        temp.set(i - 2, gs);
-                        temp.remove(i);
-                        temp.remove(--i);
-                    }
+                    Grammar g1 = generateGrammar(temp.get(i - 2));
+                    Grammar g2 = generateGrammar(temp.get(i));
+                    Grammar.Grammars gs = new Grammar.Grammars();
+                    gs.put(g1, blank, g2);
+                    temp.set(i - 2, gs);
+                    temp.remove(i);
+                    temp.remove(--i);
                 }
             }
         }
@@ -165,6 +112,17 @@ public class Convertor {
                 }
             }
         }
+    }
+
+    private static Grammar generateGrammar(Object o) {
+        if (o instanceof BaseKeyValue && ((BaseKeyValue) o).getBaseKey() == BaseKey.TEXT) {
+            Grammar.Text t = new Grammar.Text();
+            t.put(((BaseKeyValue) o).getValue());
+            return t;
+        } else if (o.getClass().getSuperclass().equals(Grammar.class)) {
+            return (Grammar) o;
+        }
+        throw new SqlEngineException("generateGrammar error:" + o);
     }
 
     public static List<BaseKeyValue> convertBaseKey(String input) {
