@@ -6,21 +6,24 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Convertor {
 
     private static final BaseKey[] COLLECT_TEXT_PATTERN = new BaseKey[]{BaseKey.TEXT, BaseKey.BLANK, BaseKey.TEXT};
 
     public static void replaceSubTemp(List<Grammar> grammars, Map<String, List<Grammar>> subMapper) {
-        for (int i = grammars.size() - 1; i > 0; i--) {
-            if(grammars.get(i) instanceof Grammar.SubGrammar) {
-                String key = ((Grammar.SubGrammar)grammars.get(i)).getKey();
-                if(subMapper.containsKey(key)) {
+        for (int i = grammars.size() - 1; i >= 0; i--) {
+            if (grammars.get(i) instanceof Grammar.SubGrammar) {
+                String key = ((Grammar.SubGrammar) grammars.get(i)).getKey();
+                if (subMapper.containsKey(key)) {
                     Grammar.Grammars gs = new Grammar.Grammars();
                     Grammar[] ab = subMapper.get(key).toArray(new Grammar[]{});
                     gs.put(ab);
                     grammars.set(i, gs);
                 }
+            } else if (grammars.get(i) instanceof Grammar.Grammars) {
+                replaceSubTemp(((Grammar.Grammars) grammars.get(i)).getGrammars(), subMapper);
             }
         }
     }
@@ -31,26 +34,25 @@ public class Convertor {
         convert(temp);
 
         // 全部转化成Grammar
-        List<Grammar> result = new ArrayList<>();
-        for (Object o : temp) {
-            result.add((Grammar)o);
-        }
-        return result;
+        return temp.stream().map(o -> (Grammar) o).collect(Collectors.toList());
     }
 
     private static void convert(List<Object> temp) {
         boolean hasReplace = false;
-        for(Class<?> g : Grammar.class.getDeclaredClasses()){
+        // filter 所有Grammar子类
+        for (Class<?> g : Grammar.class.getDeclaredClasses()) {
             try {
                 Field field = g.getDeclaredField("BASE_KEYS");
-                List a = (List)field.get(null);
-                if(a.isEmpty()) {continue;}
+                List a = (List) field.get(null);
+                if (a.isEmpty()) {
+                    continue;
+                }
                 List<Integer> tempFinds = Sunday.find(temp.toArray(), a.toArray());
 
-                if(tempFinds != null && !tempFinds.isEmpty()) {
+                if (tempFinds != null && !tempFinds.isEmpty()) {
                     for (int i = tempFinds.size() - 1; i > 0; i -= 2) {
                         // 创建Grammar
-                        Grammar grammar = (Grammar)g.newInstance();
+                        Grammar grammar = (Grammar) g.newInstance();
 
                         // 赋值
                         int begin = tempFinds.get(i - 1);
@@ -69,55 +71,58 @@ public class Convertor {
                 throw new SqlEngineException(e.getMessage(), e);
             }
         }
-        if(hasReplace) {
-            // 合并Text和Grammar
-            for (int i = temp.size() -1; i > 0; i--) {
-                if(temp.get(i) instanceof BaseKeyValue && ((BaseKeyValue)temp.get(i)).getBaseKey() == BaseKey.TEXT
-                 && temp.get(i - 1).getClass().getSuperclass().equals(Grammar.class)) {
-                    Grammar.Text t = new Grammar.Text();
-                    t.put(((BaseKeyValue) temp.get(i)).getValue());
 
-                    if(temp.get(i - 1) instanceof Grammar.Grammars) {
-                        ((Grammar.Grammars) temp.get(i - 1)).addAfter(t);
-                        temp.remove(i);
-                        continue;
-                    } else {
-                        Grammar.Grammars gs = new Grammar.Grammars();
-                        gs.put((Grammar)temp.get(i - 1), t);
-                        temp.set(i - 1, gs);
-                        temp.remove(i);
-                        continue;
-                    }
-                }
-
-                if(temp.get(i-1) instanceof BaseKeyValue && ((BaseKeyValue)temp.get(i-1)).getBaseKey() == BaseKey.TEXT
-                        && temp.get(i).getClass().getSuperclass().equals(Grammar.class)) {
-                    Grammar.Text t = new Grammar.Text();
-                    t.put(((BaseKeyValue) temp.get(i - 1)).getValue());
-                    if(temp.get(i) instanceof Grammar.Grammars) {
-                        ((Grammar.Grammars) temp.get(i)).addBefore(t);
-                        temp.remove(i - 1);
-                    } else {
-                        Grammar.Grammars gs = new Grammar.Grammars();
-                        gs.put(t, (Grammar)temp.get(i));
-                        temp.set(i - 1, gs);
-                        temp.remove(i);
-                    }
+        // 合并Text和Grammar
+        for (int i = temp.size() - 1; i > 0; i--) {
+            if (temp.get(i).equals(BaseKey.MIX)) {
+                if (temp.get(i - 1).equals(BaseKey.MIX)) {
+                    hasReplace = true;
+                    Grammar g1 = generateGrammar(temp.get(i - 1));
+                    Grammar g2 = generateGrammar(temp.get(i));
+                    Grammar.Grammars gs = new Grammar.Grammars();
+                    gs.put(g1, g2);
+                    temp.set(i - 1, gs);
+                    temp.remove(i);
+                } else if (i > 1 && temp.get(i - 1) instanceof BaseKeyValue && ((BaseKeyValue) temp.get(i - 1)).getBaseKey() == BaseKey.BLANK
+                        && temp.get(i - 2).equals(BaseKey.MIX)) {
+                    hasReplace = true;
+                    Grammar.Text blank = new Grammar.Text();
+                    blank.put(" ");
+                    Grammar g1 = generateGrammar(temp.get(i - 2));
+                    Grammar g2 = generateGrammar(temp.get(i));
+                    Grammar.Grammars gs = new Grammar.Grammars();
+                    gs.put(g1, blank, g2);
+                    temp.set(i - 2, gs);
+                    temp.remove(i);
+                    temp.remove(--i);
                 }
             }
+        }
 
+        if (hasReplace) {
             // 递归
             convert(temp);
         } else {
             // 全部替换成Grammar
             for (int i = 0; i < temp.size(); i++) {
-                if(temp.get(i) instanceof BaseKeyValue) {
+                if (temp.get(i) instanceof BaseKeyValue) {
                     Grammar.Text t = new Grammar.Text();
                     t.put(((BaseKeyValue) temp.get(i)).getValue());
                     temp.set(i, t);
                 }
             }
         }
+    }
+
+    private static Grammar generateGrammar(Object o) {
+        if (o instanceof BaseKeyValue && ((BaseKeyValue) o).getBaseKey() == BaseKey.TEXT) {
+            Grammar.Text t = new Grammar.Text();
+            t.put(((BaseKeyValue) o).getValue());
+            return t;
+        } else if (o.getClass().getSuperclass().equals(Grammar.class)) {
+            return (Grammar) o;
+        }
+        throw new SqlEngineException("generateGrammar error:" + o);
     }
 
     public static List<BaseKeyValue> convertBaseKey(String input) {
@@ -148,7 +153,7 @@ public class Convertor {
 
         // 3.组装result
         int cursor = 0;
-        if(indexBaseKey.isEmpty()) {
+        if (indexBaseKey.isEmpty()) {
             BaseKeyValue bv = new BaseKeyValue();
             bv.setBaseKey(BaseKey.TEXT);
             bv.setValue(input);
@@ -171,7 +176,7 @@ public class Convertor {
             result.add(bv);
         }
 
-        if(cursor < input.length()) {
+        if (cursor < input.length()) {
             BaseKeyValue bv = new BaseKeyValue();
             bv.setBaseKey(BaseKey.TEXT);
             bv.setValue(input.substring(cursor, input.length()));
@@ -179,23 +184,23 @@ public class Convertor {
         }
 
         // 4.语法意境推测,还原被误转化
-        for (int i = result.size() - 2; i > 0 ; i--) {
+        for (int i = result.size() - 2; i > 0; i--) {
             BaseKeyValue bv = result.get(i);
-            BaseKeyValue prebv = result.get(i-1);
-            BaseKeyValue aftbv = result.get(i+1);
+            BaseKeyValue prebv = result.get(i - 1);
+            BaseKeyValue aftbv = result.get(i + 1);
             //只有2种情况, :xxx_  _xxx:
-            for(BaseKey b : BaseKey.ALPHABET) {
-                if(b.equals(bv.getBaseKey())) {
-                    if(!(BaseKey.COLON == prebv.getBaseKey() && BaseKey.BLANK == aftbv.getBaseKey())
+            for (BaseKey b : BaseKey.ALPHABET) {
+                if (b.equals(bv.getBaseKey())) {
+                    if (!(BaseKey.COLON == prebv.getBaseKey() && BaseKey.BLANK == aftbv.getBaseKey())
                             && !(BaseKey.COLON == aftbv.getBaseKey() && BaseKey.BLANK == prebv.getBaseKey())) {
                         // 转化成text
                         result.get(i).setBaseKey(BaseKey.TEXT);
                         // 合并
-                        if(BaseKey.TEXT == aftbv.getBaseKey()) {
+                        if (BaseKey.TEXT == aftbv.getBaseKey()) {
                             bv.setValue(bv.getValue().concat(aftbv.getValue()));
-                            result.remove(i+1);
+                            result.remove(i + 1);
                         }
-                        if(BaseKey.TEXT == prebv.getBaseKey()) {
+                        if (BaseKey.TEXT == prebv.getBaseKey()) {
                             prebv.setValue(prebv.getValue().concat(bv.getValue()));
                             result.remove(i);
                             i--;
@@ -205,8 +210,8 @@ public class Convertor {
             }
 
             // 去除::_或者_::中的blank, 减少匹配量
-            if(bv.getBaseKey() == BaseKey.COLON) {
-                if(BaseKey.COLON == prebv.getBaseKey() && BaseKey.BLANK == aftbv.getBaseKey()) {
+            if (bv.getBaseKey() == BaseKey.COLON) {
+                if (BaseKey.COLON == prebv.getBaseKey() && BaseKey.BLANK == aftbv.getBaseKey()) {
                     result.remove(i + 1);
                 }
                 if (BaseKey.COLON == aftbv.getBaseKey() && BaseKey.BLANK == prebv.getBaseKey()) {

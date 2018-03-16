@@ -34,6 +34,6 @@ public class SqlSession {
 
     @Override
     public String toString() {
-        return sql + "\n" + params;
+        return sql + "\t" + params;
     }
 }

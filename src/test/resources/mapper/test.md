@@ -19,7 +19,7 @@ from tab
 where a = #a#
 and b in (
 :for l:list :with ,::
- #l#
+#l#
 for:
 )
 ```

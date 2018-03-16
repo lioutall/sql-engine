@@ -217,6 +217,11 @@ public abstract class Grammar {
         }
 
         public static final List<BaseKey> BASE_KEYS = new ArrayList<>();
+
+        public List<Grammar> getGrammars() {
+            return grammars;
+        }
+
         private LinkedList<Grammar> grammars;
 
         @Override
