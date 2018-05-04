@@ -126,6 +126,8 @@ public class Convertor {
     }
 
     public static List<BaseKeyValue> convertBaseKey(String input) {
+        // 防止括号产生的误匹配, 字符粘连导致后续计算失误
+        input = input.replace(")", " )");
         input = input.replaceAll("\\s+", BaseKey.BLANK.key());
 
         List<BaseKeyValue> result = new ArrayList<>();
