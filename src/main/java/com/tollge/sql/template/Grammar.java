@@ -12,7 +12,7 @@ import java.util.*;
  */
 public abstract class Grammar {
     private static final String REPLACE = "?";
-    private static ExParser parser=new ExParser();
+    private static ExParser parser = new ExParser();
 
     /**
      * Grammar与mix匹配上
@@ -40,21 +40,27 @@ public abstract class Grammar {
     }
 
     static class If extends Grammar {
-        public If() {}
+        public If() {
+        }
 
         public static final List<BaseKey> BASE_KEYS = Arrays.asList(BaseKey.COLON, BaseKey.IF, BaseKey.BLANK, BaseKey.TEXT, BaseKey.COLON, BaseKey.COLON,
                 BaseKey.MIX, BaseKey.BLANK,
                 BaseKey.IF, BaseKey.COLON);
         private Grammar ifTrue;
 
+        public Grammar getIfTrue() {
+            return ifTrue;
+        }
+
         // 表达式引擎, 使用了开源的jexparser
-        /** 支持以下表达式
-         >  <  =  >=  <=
-         +  -  *  /
-         or  and  not
-         '  ( )  ?  0~9 .
-         equals  equalsIgnoreCase  contains  containsIgnoreCase
-         startWith  startWithIgnoreCase  endWith  endWithIgnoreCase
+        /**
+         * 支持以下表达式
+         * >  <  =  >=  <=
+         * +  -  *  /
+         * or  and  not
+         * '  ( )  ?  0~9 .
+         * equals  equalsIgnoreCase  contains  containsIgnoreCase
+         * startWith  startWithIgnoreCase  endWith  endWithIgnoreCase
          */
         private ExParser.ExpItem[] expItems;
 
@@ -67,7 +73,7 @@ public abstract class Grammar {
 
         @Override
         public void string(StringBuilder sb, List<Object> params, Map<String, Object> inputs) {
-            if((Boolean)parser.doParse(expItems, inputs)) {
+            if ((Boolean) parser.doParse(expItems, inputs)) {
                 ifTrue.string(sb, params, inputs);
             }
         }
@@ -90,6 +96,14 @@ public abstract class Grammar {
         private Grammar ifTrue;
         private Grammar ifFalse;
 
+        public Grammar getIfTrue() {
+            return ifTrue;
+        }
+
+        public Grammar getIfFalse() {
+            return ifFalse;
+        }
+
         @Override
         public void putValues(List<Object> temp, int begin, int end) {
             String condition = ((BaseKeyValue) temp.get(begin + 3)).getValue();
@@ -100,7 +114,7 @@ public abstract class Grammar {
 
         @Override
         public void string(StringBuilder sb, List<Object> params, Map<String, Object> inputs) {
-            if ((Boolean)parser.doParse(expItems, inputs)) {
+            if ((Boolean) parser.doParse(expItems, inputs)) {
                 ifTrue.string(sb, params, inputs);
             } else {
                 ifFalse.string(sb, params, inputs);
@@ -119,6 +133,10 @@ public abstract class Grammar {
         private String item;
         private String items;
         private Grammar forGrammar;
+
+        public Grammar getForGrammar() {
+            return forGrammar;
+        }
 
         @Override
         public void putValues(List<Object> temp, int begin, int end) {
@@ -148,6 +166,10 @@ public abstract class Grammar {
         private String items;
         private String with;
         private Grammar forGrammar;
+
+        public Grammar getForGrammar() {
+            return forGrammar;
+        }
 
         @Override
         public void putValues(List<Object> temp, int begin, int end) {

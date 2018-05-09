@@ -31,4 +31,14 @@ public class Tester {
         }
         System.out.println((new Date()).getTime() - begin.getTime());
     }
+
+    @Test
+    public void testSome() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("a", "a");
+        params.put("b", "bbb");
+        params.put("c", "c");
+        params.put("list", Arrays.asList("1","1a","1b"));
+        System.out.println(SqlTemplate.generateSQL("test.testSome", params));
+    }
 }

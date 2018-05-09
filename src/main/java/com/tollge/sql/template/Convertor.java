@@ -14,7 +14,8 @@ public class Convertor {
 
     public static void replaceSubTemp(List<Grammar> grammars, Map<String, List<Grammar>> subMapper) {
         for (int i = grammars.size() - 1; i >= 0; i--) {
-            if (grammars.get(i) instanceof Grammar.SubGrammar) {
+            Grammar current = grammars.get(i);
+            if (current instanceof Grammar.SubGrammar) {
                 String key = ((Grammar.SubGrammar) grammars.get(i)).getKey();
                 if (subMapper.containsKey(key)) {
                     Grammar.Grammars gs = new Grammar.Grammars();
@@ -22,8 +23,21 @@ public class Convertor {
                     gs.put(ab);
                     grammars.set(i, gs);
                 }
-            } else if (grammars.get(i) instanceof Grammar.Grammars) {
-                replaceSubTemp(((Grammar.Grammars) grammars.get(i)).getGrammars(), subMapper);
+            } else if (current instanceof Grammar.Grammars) {
+                replaceSubTemp(((Grammar.Grammars) current).getGrammars(), subMapper);
+            } else if (current instanceof Grammar.If && ((Grammar.If)current).getIfTrue() instanceof Grammar.Grammars) {
+                replaceSubTemp(((Grammar.Grammars)((Grammar.If)current).getIfTrue()).getGrammars(), subMapper);
+            } else if (current instanceof Grammar.IfElse) {
+                if(((Grammar.IfElse)current).getIfTrue() instanceof Grammar.Grammars) {
+                    replaceSubTemp(((Grammar.Grammars) ((Grammar.IfElse) current).getIfTrue()).getGrammars(), subMapper);
+                }
+                if(((Grammar.IfElse)current).getIfFalse() instanceof Grammar.Grammars) {
+                    replaceSubTemp(((Grammar.Grammars) ((Grammar.IfElse) current).getIfFalse()).getGrammars(), subMapper);
+                }
+            } else if (current instanceof Grammar.For && ((Grammar.For)current).getForGrammar() instanceof Grammar.Grammars) {
+                replaceSubTemp(((Grammar.Grammars)((Grammar.For)current).getForGrammar()).getGrammars(), subMapper);
+            } else if (current instanceof Grammar.ForWith && ((Grammar.ForWith)current).getForGrammar() instanceof Grammar.Grammars) {
+                replaceSubTemp(((Grammar.Grammars)((Grammar.ForWith)current).getForGrammar()).getGrammars(), subMapper);
             }
         }
     }
