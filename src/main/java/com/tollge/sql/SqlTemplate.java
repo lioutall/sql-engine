@@ -75,9 +75,9 @@ public class SqlTemplate {
                                 contextBuilder.deleteCharAt(contextBuilder.length() - 1);
 
                                 if (subBegin) {
-                                    subMapper.put(key, SqlTemplate.generateGrammars(contextBuilder.toString(), null));
+                                    subMapper.put(key, SqlTemplate.generateGrammars(contextBuilder.toString()));
                                 } else {
-                                    mapper.put(key, SqlTemplate.generateGrammars(contextBuilder.toString(), subMapper));
+                                    mapper.put(key, SqlTemplate.generateGrammars(contextBuilder.toString()));
                                 }
 
                                 name = "";
@@ -89,24 +89,24 @@ public class SqlTemplate {
                     }
                 }
             }
+
+            // 全部做好之后, 统一替换掉subGrammar
+            if (!subMapper.isEmpty()) {
+                for(List<Grammar> grammars : mapper.values()){
+                    Convertor.replaceSubTemp(grammars, subMapper);
+                }
+            }
         } catch (IOException e) {
             throw new SqlEngineException("init sql failed", e);
         }
     }
 
-    private static List<Grammar> generateGrammars(String sql, Map<String, List<Grammar>> subMapper) {
+    private static List<Grammar> generateGrammars(String sql) {
         // 基础转化
         List<BaseKeyValue> baseKeys = Convertor.convertBaseKey(sql);
 
         // 语法适配
-        List<Grammar> grammars = Convertor.convertGrammar(baseKeys);
-
-        // 替换掉subGrammar
-        if (subMapper != null) {
-            Convertor.replaceSubTemp(grammars, subMapper);
-        }
-
-        return grammars;
+        return Convertor.convertGrammar(baseKeys);
     }
 
 

@@ -26,9 +26,18 @@ public class Tester {
 
         Date begin = new Date();
         // 执行性能测试时, 请关闭debug log
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 100000; i++) {
             SqlTemplate.generateSQL("test.testSubMain", params);
         }
         System.out.println((new Date()).getTime() - begin.getTime());
+    }
+
+    @Test
+    public void test2() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("a", "a");
+        params.put("b", "bbb");
+        params.put("c", "c");
+        System.out.println(SqlTemplate.generateSQL("test.testBug", params));
     }
 }

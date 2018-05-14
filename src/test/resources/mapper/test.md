@@ -24,22 +24,11 @@ for:
 )
 ```
 
-## testSub
-> 测试sql块
-```sub
-:if b='bb' ::
-and b = #b#
-if:
-:if c='c' ::
-and c = #c#
-if:
-```
-
 ## testSubMain
 > 调用上面的代码块
 ```sql
 select * from tab where 1=1
-:sub test.testSub sub:
+:sub z.testSub sub:
 ```
 
 ## testNesting
@@ -53,4 +42,12 @@ and b = #c#
 if:
 if:
 
+```
+
+## testBug
+> 测试bug
+```sql
+up a
+set("a", b, c) = (#a#, #b#, #c#)
+where d=#a#
 ```
