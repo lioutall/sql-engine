@@ -33,11 +33,12 @@ public class Tester {
     }
 
     @Test
-    public void test2() {
+    public void testSome() {
         Map<String, Object> params = new HashMap<>();
         params.put("a", "a");
         params.put("b", "bbb");
         params.put("c", "c");
-        System.out.println(SqlTemplate.generateSQL("test.testBug", params));
+        params.put("list", Arrays.asList("1","1a","1b"));
+        System.out.println(SqlTemplate.generateSQL("test.testSome", params));
     }
 }

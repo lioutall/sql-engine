@@ -44,10 +44,22 @@ if:
 
 ```
 
-## testBug
-> 测试bug
+
+## dateformat
+> 测试sql块
+```sub
+'yyyy-mm-dd hh24:mi:ss'
+```
+
+## testSome
+> 测试某种
 ```sql
-up a
-set("a", b, c) = (#a#, #b#, #c#)
-where d=#a#
+select now()
+:if upName isNotNull::
+and r1.user_name like '%' || #upName# || '%'
+if:
+:if a isNotNull::
+and n.modify_time > to_timestamp(#a#, :sub test.dateformat sub:)
+if:
+
 ```

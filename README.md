@@ -92,5 +92,11 @@ SqlTemplate类初始化时加载所有sql模板, 并保存为 xxx.testIf, xxx是
 SqlTemplate.generateSQL("xxx.testIf", params)
 ```
 
-
-
+### 其他
+有时候解析不出来, 可以试试在#a#之类前后加空格.
+如果还解决不了, 把无法解析的地方提取到子模板里去,比如例子里面的:
+```
+## dateformat
+'yyyy-mm-dd hh24:mi:ss'
+```
+因为使用了:(冒号)作为语法符号, 导致没办法对日期格式解析. 暂时不想替换掉冒号, 有洁癖的哥们可以自行修改成其他.
