@@ -47,16 +47,17 @@ public class SqlTemplate {
                 }
             }
 
-            try (InputStream pathIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+            try (InputStream pathIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(templateDir);
                  BufferedReader br = new BufferedReader(new InputStreamReader(pathIS))) {
                 for (String filename : br.lines().collect(Collectors.toList())) {
                     if (!filename.endsWith(DEFAULT_FILE_TYPE)) {
                         continue;
                     }
 
-                    try(InputStream fileIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(path + "/" + filename);
+                    try(InputStream fileIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(templateDir + "/" + filename);
                         BufferedReader brFile = new BufferedReader(new InputStreamReader(fileIS))) {
-                        readSqlFile(subMapper, path, filename, brFile);
+
+                        readSqlFile(subMapper, templateDir, filename, brFile);
                     }
                 }
             }
