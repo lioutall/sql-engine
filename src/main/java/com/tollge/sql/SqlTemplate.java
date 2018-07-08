@@ -11,10 +11,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +33,20 @@ public class SqlTemplate {
         try {
             Map<String, List<Grammar>> subMapper = new HashMap<>();
 
-            String path = "mapper";
+            String templateDir = "mapper";
+            String path = SqlTemplate.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            JarFile jarFile = new JarFile(path);
+            Enumeration<JarEntry> dd = jarFile.entries();
+            while (dd.hasMoreElements()) {
+                JarEntry entry = dd.nextElement();
+                if(!entry.isDirectory() && entry.getName().startsWith(templateDir)) {
+                    try(InputStream fileIS = jarFile.getInputStream(entry);
+                        BufferedReader brFile = new BufferedReader(new InputStreamReader(fileIS))) {
+                        readSqlFile(subMapper, path, entry.getName().substring(templateDir.length()+1), brFile);
+                    }
+                }
+            }
+
             try (InputStream pathIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
                  BufferedReader br = new BufferedReader(new InputStreamReader(pathIS))) {
                 for (String filename : br.lines().collect(Collectors.toList())) {
@@ -44,48 +56,7 @@ public class SqlTemplate {
 
                     try(InputStream fileIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(path + "/" + filename);
                         BufferedReader brFile = new BufferedReader(new InputStreamReader(fileIS))) {
-
-                        String fileName = filename.substring(0, filename.length() - DEFAULT_FILE_TYPE.length());
-                        String line;
-
-                        StringBuilder contextBuilder = null;
-                        boolean subBegin = false;
-                        String name = "";
-                        while ((line = brFile.readLine()) != null) {
-                            if(contextBuilder != null && !line.startsWith(FileKeyword.END)) {
-                                contextBuilder.append(line).append("\n");
-                                continue;
-                            }
-
-                            if(line.startsWith(FileKeyword.NAME_PREFIX)) {
-                                name = line.substring(FileKeyword.NAME_PREFIX.length());
-                            } else if (line.startsWith(FileKeyword.SQL_BEGIN)) {
-                                contextBuilder = new StringBuilder();
-                            } else if (line.startsWith(FileKeyword.SUB_BEGIN)) {
-                                contextBuilder = new StringBuilder();
-                                subBegin = true;
-                            } else if (line.startsWith(FileKeyword.END)) {
-                                if("".equals(name) || contextBuilder == null) {
-                                    throw new SqlEngineException("解析错误:"+path+"/"+filename+":"+line);
-                                }
-
-                                String key = fileName.concat(".").concat(name);
-                                log.debug("SQL template load " + key);
-
-                                contextBuilder.deleteCharAt(contextBuilder.length() - 1);
-
-                                if (subBegin) {
-                                    subMapper.put(key, SqlTemplate.generateGrammars(contextBuilder.toString()));
-                                } else {
-                                    mapper.put(key, SqlTemplate.generateGrammars(contextBuilder.toString()));
-                                }
-
-                                name = "";
-                                contextBuilder = null;
-                                subBegin = false;
-                            }
-
-                        }
+                        readSqlFile(subMapper, path, filename, brFile);
                     }
                 }
             }
@@ -98,6 +69,50 @@ public class SqlTemplate {
             }
         } catch (IOException e) {
             throw new SqlEngineException("init sql failed", e);
+        }
+    }
+
+    private static void readSqlFile(Map<String, List<Grammar>> subMapper, String path, String filename, BufferedReader brFile) throws IOException {
+        String fileName = filename.substring(0, filename.length() - DEFAULT_FILE_TYPE.length());
+        String line;
+
+        StringBuilder contextBuilder = null;
+        boolean subBegin = false;
+        String name = "";
+        while ((line = brFile.readLine()) != null) {
+            if(contextBuilder != null && !line.startsWith(FileKeyword.END)) {
+                contextBuilder.append(line).append("\n");
+                continue;
+            }
+
+            if(line.startsWith(FileKeyword.NAME_PREFIX)) {
+                name = line.substring(FileKeyword.NAME_PREFIX.length());
+            } else if (line.startsWith(FileKeyword.SQL_BEGIN)) {
+                contextBuilder = new StringBuilder();
+            } else if (line.startsWith(FileKeyword.SUB_BEGIN)) {
+                contextBuilder = new StringBuilder();
+                subBegin = true;
+            } else if (line.startsWith(FileKeyword.END)) {
+                if("".equals(name) || contextBuilder == null) {
+                    throw new SqlEngineException("解析错误:"+path+"/"+filename+":"+line);
+                }
+
+                String key = fileName.concat(".").concat(name);
+                log.debug("SQL template load " + key);
+
+                contextBuilder.deleteCharAt(contextBuilder.length() - 1);
+
+                if (subBegin) {
+                    subMapper.put(key, SqlTemplate.generateGrammars(contextBuilder.toString()));
+                } else {
+                    mapper.put(key, SqlTemplate.generateGrammars(contextBuilder.toString()));
+                }
+
+                name = "";
+                contextBuilder = null;
+                subBegin = false;
+            }
+
         }
     }
 
