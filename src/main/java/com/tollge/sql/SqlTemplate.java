@@ -35,11 +35,13 @@ public class SqlTemplate {
 
             String templateDir = "mapper";
             String path = SqlTemplate.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            log.debug("找到jar包位置:{}", path);
             JarFile jarFile = new JarFile(path);
             Enumeration<JarEntry> dd = jarFile.entries();
             while (dd.hasMoreElements()) {
                 JarEntry entry = dd.nextElement();
                 if(!entry.isDirectory() && entry.getName().startsWith(templateDir)) {
+                    log.debug("遍历mapper文件:{}", entry.getName());
                     try(InputStream fileIS = jarFile.getInputStream(entry);
                         BufferedReader brFile = new BufferedReader(new InputStreamReader(fileIS))) {
                         readSqlFile(subMapper, path, entry.getName().substring(templateDir.length()+1), brFile);
