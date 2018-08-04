@@ -130,6 +130,8 @@ public class ExParser {
 			else if (obj instanceof Float) {
 				type = 'D';
 				value = (double) (Float) value;// NOSONAR
+			} else if (obj instanceof List) {
+				type = 'A';
 			} else
 				throw new ExParserException("Unrecognized expression data type for '" + obj + "'");
 		}
