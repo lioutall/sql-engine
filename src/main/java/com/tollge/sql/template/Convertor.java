@@ -16,7 +16,13 @@ public class Convertor {
         for (int i = grammars.size() - 1; i >= 0; i--) {
             Grammar current = grammars.get(i);
             if (current instanceof Grammar.SubGrammar) {
-                dealSubGrammar(grammars, subMapper, i, (Grammar.SubGrammar) current);
+                String key = ((Grammar.SubGrammar) current).getKey();
+                if (subMapper.containsKey(key)) {
+                    Grammar.Grammars gs = new Grammar.Grammars();
+                    Grammar[] ab = subMapper.get(key).toArray(new Grammar[]{});
+                    gs.put(ab);
+                    grammars.set(i, gs);
+                }
             } else if (current instanceof Grammar.Grammars) {
                 replaceSubTemp(((Grammar.Grammars) current).getGrammars(), subMapper);
             } else if (current instanceof Grammar.If) {
@@ -24,44 +30,64 @@ public class Convertor {
                     replaceSubTemp(((Grammar.Grammars)((Grammar.If)current).getIfTrue()).getGrammars(), subMapper);
                 }
                 else if(((Grammar.If)current).getIfTrue() instanceof Grammar.SubGrammar) {
-                    dealSubGrammar(grammars, subMapper, i, (Grammar.SubGrammar)((Grammar.If)current).getIfTrue());
+                    String key = ((Grammar.SubGrammar)((Grammar.If)current).getIfTrue()).getKey();
+                    if (subMapper.containsKey(key)) {
+                        Grammar.Grammars gs = new Grammar.Grammars();
+                        Grammar[] ab = subMapper.get(key).toArray(new Grammar[]{});
+                        gs.put(ab);
+                        ((Grammar.If) current).setIfTrue(gs);
+                    }
                 }
             } else if (current instanceof Grammar.IfElse) {
                 if(((Grammar.IfElse)current).getIfTrue() instanceof Grammar.Grammars) {
                     replaceSubTemp(((Grammar.Grammars) ((Grammar.IfElse) current).getIfTrue()).getGrammars(), subMapper);
                 } else if(((Grammar.IfElse)current).getIfTrue() instanceof Grammar.SubGrammar) {
-                    dealSubGrammar(grammars, subMapper, i, (Grammar.SubGrammar)((Grammar.IfElse)current).getIfTrue());
+                    String key = ((Grammar.SubGrammar)((Grammar.IfElse)current).getIfTrue()).getKey();
+                    if (subMapper.containsKey(key)) {
+                        Grammar.Grammars gs = new Grammar.Grammars();
+                        Grammar[] ab = subMapper.get(key).toArray(new Grammar[]{});
+                        gs.put(ab);
+                        ((Grammar.IfElse) current).setIfTrue(gs);
+                    }
                 }
                 if(((Grammar.IfElse)current).getIfFalse() instanceof Grammar.Grammars) {
                     replaceSubTemp(((Grammar.Grammars) ((Grammar.IfElse) current).getIfFalse()).getGrammars(), subMapper);
                 } else if(((Grammar.IfElse)current).getIfFalse() instanceof Grammar.SubGrammar) {
-                    dealSubGrammar(grammars, subMapper, i, (Grammar.SubGrammar)((Grammar.IfElse)current).getIfFalse());
+                    String key = ((Grammar.SubGrammar)((Grammar.IfElse)current).getIfFalse()).getKey();
+                    if (subMapper.containsKey(key)) {
+                        Grammar.Grammars gs = new Grammar.Grammars();
+                        Grammar[] ab = subMapper.get(key).toArray(new Grammar[]{});
+                        gs.put(ab);
+                        ((Grammar.IfElse) current).setIfFalse(gs);
+                    }
                 }
             } else if (current instanceof Grammar.For) {
                 if(((Grammar.For)current).getForGrammar() instanceof Grammar.Grammars) {
                     replaceSubTemp(((Grammar.Grammars)((Grammar.For)current).getForGrammar()).getGrammars(), subMapper);
                 }
                 else if(((Grammar.For)current).getForGrammar() instanceof Grammar.SubGrammar) {
-                    dealSubGrammar(grammars, subMapper, i, (Grammar.SubGrammar)((Grammar.For)current).getForGrammar());
+                    String key = ((Grammar.SubGrammar)((Grammar.For)current).getForGrammar()).getKey();
+                    if (subMapper.containsKey(key)) {
+                        Grammar.Grammars gs = new Grammar.Grammars();
+                        Grammar[] ab = subMapper.get(key).toArray(new Grammar[]{});
+                        gs.put(ab);
+                        ((Grammar.For) current).setForGrammar(gs);
+                    }
                 }
             } else if (current instanceof Grammar.ForWith) {
                 if(((Grammar.ForWith)current).getForGrammar() instanceof Grammar.Grammars) {
                     replaceSubTemp(((Grammar.Grammars)((Grammar.ForWith)current).getForGrammar()).getGrammars(), subMapper);
                 }
                 else if(((Grammar.ForWith)current).getForGrammar() instanceof Grammar.SubGrammar){
-                    dealSubGrammar(grammars, subMapper, i, (Grammar.SubGrammar)((Grammar.ForWith)current).getForGrammar());
+                    String key = ((Grammar.SubGrammar)((Grammar.ForWith)current).getForGrammar()).getKey();
+                    if (subMapper.containsKey(key)) {
+                        Grammar.Grammars gs = new Grammar.Grammars();
+                        Grammar[] ab = subMapper.get(key).toArray(new Grammar[]{});
+                        gs.put(ab);
+                        ((Grammar.ForWith) current).setForGrammar(gs);
+                    }
                 }
             }
-        }
-    }
-
-    private static void dealSubGrammar(List<Grammar> grammars, Map<String, List<Grammar>> subMapper, int i, Grammar.SubGrammar current) {
-        String key = current.getKey();
-        if (subMapper.containsKey(key)) {
-            Grammar.Grammars gs = new Grammar.Grammars();
-            Grammar[] ab = subMapper.get(key).toArray(new Grammar[]{});
-            gs.put(ab);
-            grammars.set(i, gs);
         }
     }
 

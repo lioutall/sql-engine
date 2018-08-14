@@ -52,6 +52,10 @@ public abstract class Grammar {
             return ifTrue;
         }
 
+        public void setIfTrue(Grammar ifTrue) {
+            this.ifTrue = ifTrue;
+        }
+
         // 表达式引擎, 使用了开源的jexparser
         /**
          * 支持以下表达式
@@ -100,8 +104,16 @@ public abstract class Grammar {
             return ifTrue;
         }
 
+        public void setIfTrue(Grammar ifTrue) {
+            this.ifTrue = ifTrue;
+        }
+
         public Grammar getIfFalse() {
             return ifFalse;
+        }
+
+        public void setIfFalse(Grammar ifFalse) {
+            this.ifFalse = ifFalse;
         }
 
         @Override
@@ -137,6 +149,9 @@ public abstract class Grammar {
         public Grammar getForGrammar() {
             return forGrammar;
         }
+        public void setForGrammar(Grammar forGrammar) {
+            this.forGrammar = forGrammar;
+        }
 
         @Override
         public void putValues(List<Object> temp, int begin, int end) {
@@ -169,6 +184,9 @@ public abstract class Grammar {
 
         public Grammar getForGrammar() {
             return forGrammar;
+        }
+        public void setForGrammar(Grammar forGrammar) {
+            this.forGrammar = forGrammar;
         }
 
         @Override
