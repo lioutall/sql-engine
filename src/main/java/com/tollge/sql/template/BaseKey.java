@@ -9,7 +9,7 @@ public enum BaseKey {
     IF("if"),
     ELSE("else"),
     HASHTAG("#"),
-    COLON(":"),
+    MARK("?"),
     BLANK(" "),
 
     WITH("with"),

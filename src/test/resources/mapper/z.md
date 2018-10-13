@@ -1,10 +1,10 @@
 ## testSub
 > 测试sql块
 ```sub
-:if b='bb' ::
+?if b='bb' ??
 and b = #b#
-if:
-:if c='c' ::
+if?
+?if c='c' ??
 and c = #c#
-if:
+if?
 ```

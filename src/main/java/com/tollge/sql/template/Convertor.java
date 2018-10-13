@@ -112,6 +112,17 @@ public class Convertor {
                 }
                 List<Integer> tempFinds = Sunday.find(temp.toArray(), a.toArray());
 
+                // #a#txt#b#在匹配时会把之前的也算上, 这里会有重复, 特殊处理一下
+                if (g.equals(Grammar.Property.class)) {
+                    for (int i = tempFinds.size() - 2; i > 2; i -= 2) {
+                        if (tempFinds.get(i).intValue() == tempFinds.get(i - 1)) {
+                            tempFinds.remove(i - 1);
+                            tempFinds.remove(i - 2);
+                            i -= 2;
+                        }
+                    }
+                }
+
                 if (tempFinds != null && !tempFinds.isEmpty()) {
                     for (int i = tempFinds.size() - 1; i > 0; i -= 2) {
                         // 创建Grammar
@@ -257,8 +268,8 @@ public class Convertor {
             //只有2种情况, :xxx_  _xxx:
             for (BaseKey b : BaseKey.ALPHABET) {
                 if (b.equals(bv.getBaseKey())) {
-                    if (!(BaseKey.COLON == prebv.getBaseKey() && BaseKey.BLANK == aftbv.getBaseKey())
-                            && !(BaseKey.COLON == aftbv.getBaseKey() && BaseKey.BLANK == prebv.getBaseKey())) {
+                    if (!(BaseKey.MARK == prebv.getBaseKey() && BaseKey.BLANK == aftbv.getBaseKey())
+                            && !(BaseKey.MARK == aftbv.getBaseKey() && BaseKey.BLANK == prebv.getBaseKey())) {
                         // 转化成text
                         result.get(i).setBaseKey(BaseKey.TEXT);
                         // 合并
@@ -276,11 +287,11 @@ public class Convertor {
             }
 
             // 去除::_或者_::中的blank, 减少匹配量
-            if (bv.getBaseKey() == BaseKey.COLON) {
-                if (BaseKey.COLON == prebv.getBaseKey() && BaseKey.BLANK == aftbv.getBaseKey()) {
+            if (bv.getBaseKey() == BaseKey.MARK) {
+                if (BaseKey.MARK == prebv.getBaseKey() && BaseKey.BLANK == aftbv.getBaseKey()) {
                     result.remove(i + 1);
                 }
-                if (BaseKey.COLON == aftbv.getBaseKey() && BaseKey.BLANK == prebv.getBaseKey()) {
+                if (BaseKey.MARK == aftbv.getBaseKey() && BaseKey.BLANK == prebv.getBaseKey()) {
                     result.remove(i - 1);
                     i--;
                 }

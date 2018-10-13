@@ -43,9 +43,9 @@ public abstract class Grammar {
         public If() {
         }
 
-        public static final List<BaseKey> BASE_KEYS = Arrays.asList(BaseKey.COLON, BaseKey.IF, BaseKey.BLANK, BaseKey.TEXT, BaseKey.COLON, BaseKey.COLON,
+        public static final List<BaseKey> BASE_KEYS = Arrays.asList(BaseKey.MARK, BaseKey.IF, BaseKey.BLANK, BaseKey.TEXT, BaseKey.MARK, BaseKey.MARK,
                 BaseKey.MIX, BaseKey.BLANK,
-                BaseKey.IF, BaseKey.COLON);
+                BaseKey.IF, BaseKey.MARK);
         private Grammar ifTrue;
 
         public Grammar getIfTrue() {
@@ -88,11 +88,11 @@ public abstract class Grammar {
         public IfElse() {
         }
 
-        public static final List<BaseKey> BASE_KEYS = Arrays.asList(BaseKey.COLON, BaseKey.IF, BaseKey.BLANK, BaseKey.TEXT, BaseKey.COLON, BaseKey.COLON,
+        public static final List<BaseKey> BASE_KEYS = Arrays.asList(BaseKey.MARK, BaseKey.IF, BaseKey.BLANK, BaseKey.TEXT, BaseKey.MARK, BaseKey.MARK,
                 BaseKey.MIX, BaseKey.BLANK,
-                BaseKey.COLON, BaseKey.ELSE, BaseKey.BLANK,
+                BaseKey.MARK, BaseKey.ELSE, BaseKey.BLANK,
                 BaseKey.MIX, BaseKey.BLANK,
-                BaseKey.IF, BaseKey.COLON);
+                BaseKey.IF, BaseKey.MARK);
 
         // 表达式引擎, 使用了开源的jexparser
         private ExParser.ExpItem[] expItems;
@@ -138,9 +138,9 @@ public abstract class Grammar {
         public For() {
         }
 
-        public static final List<BaseKey> BASE_KEYS = Arrays.asList(BaseKey.COLON, BaseKey.FOR, BaseKey.BLANK, BaseKey.TEXT, BaseKey.COLON, BaseKey.TEXT, BaseKey.COLON, BaseKey.COLON,
+        public static final List<BaseKey> BASE_KEYS = Arrays.asList(BaseKey.MARK, BaseKey.FOR, BaseKey.BLANK, BaseKey.TEXT, BaseKey.MARK, BaseKey.TEXT, BaseKey.MARK, BaseKey.MARK,
                 BaseKey.MIX, BaseKey.BLANK,
-                BaseKey.FOR, BaseKey.COLON);
+                BaseKey.FOR, BaseKey.MARK);
 
         private String item;
         private String items;
@@ -173,9 +173,9 @@ public abstract class Grammar {
         public ForWith() {
         }
 
-        public static final List<BaseKey> BASE_KEYS = Arrays.asList(BaseKey.COLON, BaseKey.FOR, BaseKey.BLANK, BaseKey.TEXT, BaseKey.COLON, BaseKey.TEXT, BaseKey.BLANK, BaseKey.COLON, BaseKey.WITH, BaseKey.BLANK, BaseKey.TEXT, BaseKey.COLON, BaseKey.COLON,
+        public static final List<BaseKey> BASE_KEYS = Arrays.asList(BaseKey.MARK, BaseKey.FOR, BaseKey.BLANK, BaseKey.TEXT, BaseKey.MARK, BaseKey.TEXT, BaseKey.BLANK, BaseKey.MARK, BaseKey.WITH, BaseKey.BLANK, BaseKey.TEXT, BaseKey.MARK, BaseKey.MARK,
                 BaseKey.MIX, BaseKey.BLANK,
-                BaseKey.FOR, BaseKey.COLON);
+                BaseKey.FOR, BaseKey.MARK);
 
         private String item;
         private String items;
@@ -293,7 +293,7 @@ public abstract class Grammar {
         public SubGrammar() {
         }
 
-        public static final List<BaseKey> BASE_KEYS = Arrays.asList(BaseKey.COLON, BaseKey.SUB, BaseKey.BLANK, BaseKey.TEXT, BaseKey.BLANK, BaseKey.SUB, BaseKey.COLON);
+        public static final List<BaseKey> BASE_KEYS = Arrays.asList(BaseKey.MARK, BaseKey.SUB, BaseKey.BLANK, BaseKey.TEXT, BaseKey.BLANK, BaseKey.SUB, BaseKey.MARK);
         private String key;
 
         @Override
