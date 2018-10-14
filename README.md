@@ -1,8 +1,7 @@
 # sql-engine
-简单的sql模板引擎, 非常小, 基本不需要引入外部包(你改几行代码就可以不引入任何外部包),首次sql加载时需要语法运算,后续调用基本无性能开销.    
-主要功能如下:
+Simple sql template engine, very small, no need to introduce external packages (you can change a few lines of code without introducing any external packages).
 
-#### sql模板
+#### sql template
 ```
 select *
 from tab
@@ -13,21 +12,21 @@ and b = #b#
 and b != #b#
 if?
 ```
-java代码
+**java code**
 ```
 Map<String, Object> params = new HashMap<>();
 params.put("a", "a");
 params.put("b", "bbb");
 SqlTemplate.generateSQL("test.testIf", params)
 ```
-#### 输出:
+#### output:
 > sql:  select * from tab where a = ? and b != ?   
 params:  [a, bbb]
 
 
-## 语法
+## grammar
 ### IF
-> if的条件规则后面会讲
+> The conditional rules of if will be discussed later
 ```
 ?if a==1 ??
   mix
@@ -48,22 +47,22 @@ params:  [a, bbb]
   for
 ```
 ### FOR_WITH
-> b是字符串, 看test样例
+> b is string
 ```
 ?for a?as ?with b ??
   mix
   for?
 ```
 ### SUB
-> 子模板, 看test样例
+> sub template
 ```
 ?sub test.testSub sub?
 ```
-## IF条件
-IF条件引擎是用的开源的[jexparser](https://gitee.com/drinkjava2/jexparser)   
-它只有3个类, 直接copy到工程里了
+## IF condition
+IF Conditional engine is open source[jexparser](https://gitee.com/drinkjava2/jexparser)   
+it contains 3 classes, just copy into the jar.
 
-目前支持:
+Currently supported:
 ```
 >  <  =  >=  <=  
 +  -  *  /  
@@ -72,31 +71,24 @@ or  and  not
 equals  equalsIgnoreCase  contains  containsIgnoreCase  
 startWith  startWithIgnoreCase  endWith  endWithIgnoreCase
 ```
-在它基础上新增了一个关键字: isNotNull, 用法见test样例
+Added a keyword based on it: isNotNull
 
-### 使用
-sql模板目录: mapper   
-sql模板文件后缀: .md  (是的,就是markdown)   
-模板文件构成:
+### User Guide
+sql template folder: mapper   
+sql template file type: .md  (yeah, it is markdown)   
+Template file composition:
 ```
-## testIf      ->   sql的key
-> 注释:测试If   -> 注释
-```sql         -> sql模板内容
+## testIf      ->   key of sql
+> Comment:test If   -> Comment
+```sql         -> sql content
 
-```sub         -> 子模板,只能被sql模板引用
+```sub         -> sub template,Can only be referenced by sql template
 
 ```
-SqlTemplate类初始化时加载所有sql模板, 并保存为 xxx.testIf, xxx是文件名, testIf是sql的key.
-你只需要调用:
+When the SqlTemplate class is initialized, all sql templates are loaded and saved as xxx.testIf, xxx is the file name, and testIf is the sql key.
+You need to call:
 ```
 SqlTemplate.generateSQL("xxx.testIf", params)
 ```
 
-### 其他
-有时候解析不出来, 可以试试在#a#之类前后加空格.
-如果还解决不了, 把无法解析的地方提取到子模板里去,比如例子里面的:
-```
-## dateformat
-'yyyy-mm-dd hh24:mi:ss'
-```
 
