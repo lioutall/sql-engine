@@ -6,7 +6,7 @@ import java.util.List;
  * Bean对象
  *
  * @author toyer
- * @created 2017-12-12
+ * @since 2017-12-12
  */
 public class SqlSession {
     public SqlSession(String sql) {

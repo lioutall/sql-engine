@@ -6,13 +6,17 @@ import java.util.List;
  * 快速排序 - 定制实现
  *
  * @author toyer
- * @created 2018-03-08
+ * @since 2018-03-08
  */
 public class QuickSort {
 
     /**
      * 快速排序的主函数(定制款两位快排)
      * indexBaseKey如果传null,则是针对a的快排
+     * @param a []
+     * @param indexBaseKey []
+     * @param s []
+     * @param e []
      */
     public static void sort(List<Integer> a, List<BaseKey> indexBaseKey, int s, int e) {
 

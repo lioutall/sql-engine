@@ -3,8 +3,10 @@ version '0.1.0'
 
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'signing'
 
 sourceCompatibility = 1.8
+archivesBaseName= 'sql-engine'
 
 repositories {
     mavenCentral()
@@ -16,4 +18,66 @@ dependencies {
     testRuntimeOnly group: 'junit', name: 'junit', version: '4.12'
     testRuntimeOnly 'org.slf4j:slf4j-log4j12:1.7.25'
     testRuntimeOnly 'io.netty:netty-common:4.1.15.Final'
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'tollge'
+                packaging 'jar'
+                description 'Simple sql template engine, very small, no need to introduce external packages.'
+                url 'http://www.tollge.com/sql-engine'
+
+                scm {
+                    connection 'scm:git:git://github.com/lioutall/sql-engine.git'
+                    developerConnection 'scm:git@github.com:lioutall/sql-engine.git'
+                    url 'https://github.com/lioutall/sql-engine'
+                }
+
+                licenses {
+                    license {
+                        name 'MIT License'
+                        url 'http://www.opensource.org/licenses/mit-license.php'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'tollge'
+                        name 'LiuTuo'
+                        email 'lioutall@163.com'
+                    }
+                }
+            }
+        }
+    }
 }

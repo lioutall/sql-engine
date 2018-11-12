@@ -4,7 +4,7 @@ package com.tollge.sql;
  * 异常
  *
  * @author toyer
- * @created 2018-01-30
+ * @since 2018-01-30
  */
 public class SqlEngineException extends RuntimeException {
     public SqlEngineException(String s) {

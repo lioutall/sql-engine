@@ -7,7 +7,7 @@ import java.util.List;
  * Sunday算法
  *
  * @author toyer
- * @created 2018-03-07
+ * @since 2018-03-07
  */
 public class Sunday {
 

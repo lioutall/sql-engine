@@ -20,23 +20,23 @@ import java.util.Map;
  * ExParser parse an expression, return type can be Boolean, String, Long,
  * Double, null
  * 
- * Here the parse method only support very few keywords: * > < = >= <= + - /
+ * Here the parse method only support very few keywords: * &gt; &lt; = &gt;= &lt;= + - /
  * equals equalsIgnoreCase contains containsIgnoreCase startWith
  * startWithIgnoreCase endWith endWithIgnoreCase or and not ' () ? 0~9
  * 
  * Usage:
  * 
  * <pre>
- * Map<String, Object> keywords = new HashMap<String, Object>();
+ * Map&lt;String, Object&gt; keywords = new HashMap();
  * keywords.put("USERNAME", "Tom");
  * keywords.put("ID", "001");
  * Assert.assertEquals(true, new ExParser().doParse(keywords,
- * 		"(1+2)*3/4>0.1/(9+?) and (userName equals ?) or id equals ?", 100, "Tom", "001"));
+ * 		"(1+2)*3/4&gt;0.1/(9+?) and (userName equals ?) or id equals ?", 100, "Tom", "001"));
  * 
  * or:
  * ExParser parser=new ExParser();
  * ExpItem[] expItems = parser.compile(
- *			"(1+2)*3/4>0.1/(9+?) and (userName equals ?) and id equals ? and (200 = ? ) and (FOO = 123 or BAR equals '456')");
+ *			"(1+2)*3/4&gt;0.1/(9+?) and (userName equals ?) and id equals ? and (200 = ? ) and (FOO = 123 or BAR equals '456')");
  * Assert.assertEquals(true, parser.doParse(expItems, keywords, 100, "Tom", "001", 200));
  * 
  * </pre>
@@ -76,7 +76,7 @@ public class ExParser {
 	}
 
 	/**
-	 * Item type can be: <br/>
+	 * Item type can be:
 	 * S:String, B:Boolean, L: Long, D:Double, F:function, N:Null, (:sub items,
 	 * U:Unknow(need correct), P:parameter(need correct)
 	 * 
@@ -157,7 +157,6 @@ public class ExParser {
 	/**
 	 * Parse a expression String, return an object result
 	 * 
-	 * @param bean Expression allow direct use only 1 bean's fields
 	 * @param keyWords The preset key words key-value map
 	 * @param expression The expression
 	 * @param params The expression parameter array
@@ -179,7 +178,10 @@ public class ExParser {
 		return item.value;
 	}
 
-	/** Compile a String expression to ExpItem array */
+	/** Compile a String expression to ExpItem array
+	 * @param expression []
+	 * @return []
+	 **/
 	public ExpItem[] compile(String expression) {
 		if (ExParserUtils.isEmpty(expression))
 			return null;

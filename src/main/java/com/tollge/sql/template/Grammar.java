@@ -8,7 +8,7 @@ import java.util.*;
  * 语法
  *
  * @author toyer
- * @created 2018-03-08
+ * @since 2018-03-08
  */
 public abstract class Grammar {
     private static final String REPLACE = "?";
@@ -17,8 +17,8 @@ public abstract class Grammar {
     /**
      * Grammar与mix匹配上
      *
-     * @param o
-     * @return
+     * @param o []
+     * @return []
      */
     @Override
     public boolean equals(Object o) {

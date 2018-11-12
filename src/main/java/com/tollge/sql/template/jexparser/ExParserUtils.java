@@ -22,6 +22,9 @@ public class ExParserUtils {
 	/**
 	 * Explain functions, functions can have 1 or 2 parameters, function items
 	 * is in the middle of 2 parameters
+	 * @param func []
+	 * @param last []
+	 * @param next []
 	 */
 	public static void doTheMath(ExpItem func, ExpItem last, ExpItem next) {
 		String f = (String) func.value;
@@ -358,6 +361,7 @@ public class ExParserUtils {
 	 * @param prefix
 	 *            the prefix to look for
 	 * @see String#startsWith
+	 * @return []
 	 */
 	public static boolean startsWithIgnoreCase(String str, String prefix) {
 		if (str == null || prefix == null) {
@@ -376,6 +380,9 @@ public class ExParserUtils {
 
 	/**
 	 * Find if exist searchStr in str ignore case
+	 * @param str []
+	 * @param searchStr []
+	 * @return []
 	 */
 	public static boolean containsIgnoreCase(String str, String searchStr) {
 		if (str == null || searchStr == null)

@@ -1,6 +1,22 @@
 # sql-engine
 Simple sql template engine, very small, no need to introduce external packages (you can change a few lines of code without introducing any external packages).
 
+#### Dependency
+
+Requires JDK1.8+ support.   
+Maven
+```
+<dependency>
+    <groupId>com.tollge</groupId>
+    <artifactId>sql-engine</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
+Gradle
+```
+compile 'com.tollge:sql-engine:0.1.0'
+```
+
 #### sql template
 ```
 select *
