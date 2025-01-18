@@ -24,12 +24,12 @@ public class Tester {
         System.out.println(SqlTemplate.generateSQL("test.testSubMain", params));
         System.out.println(SqlTemplate.generateSQL("test.testNesting", params));
 
-        Date begin = new Date();
+        /*Date begin = new Date();
         // 执行性能测试时, 请关闭debug log
         for (int i = 0; i < 100000; i++) {
             SqlTemplate.generateSQL("test.testSubMain", params);
         }
-        System.out.println((new Date()).getTime() - begin.getTime());
+        System.out.println((new Date()).getTime() - begin.getTime());*/
     }
 
     @Test

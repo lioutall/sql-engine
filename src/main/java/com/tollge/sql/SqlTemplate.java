@@ -22,51 +22,28 @@ import java.util.stream.Collectors;
  * @author toyer
  */
 public class SqlTemplate {
-    private static final InternalLogger log = InternalLoggerFactory.getInstance(SqlTemplate.class);
+  private static final InternalLogger log = InternalLoggerFactory.getInstance(SqlTemplate.class);
     private SqlTemplate() {
     }
 
     private static final String DEFAULT_FILE_TYPE = ".md";
     private static Map<String, List<Grammar>> mapper = new HashMap<>();
 
-    static {
+  public static final String TEMPLATE_DIR = "mapper";
+
+  static {
         try {
             Map<String, List<Grammar>> subMapper = new HashMap<>();
 
-            String templateDir = "mapper";
-            String path = SqlTemplate.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+          String path = SqlTemplate.class.getProtectionDomain().getCodeSource().getLocation().getPath();
             log.debug("找到jar包位置:{}", path);
-            if(path.endsWith(".jar")) {
-                JarFile jarFile = new JarFile(path);
-                Enumeration<JarEntry> dd = jarFile.entries();
-                while (dd.hasMoreElements()) {
-                    JarEntry entry = dd.nextElement();
-                    if(!entry.isDirectory() && entry.getName().startsWith(templateDir)) {
-                        log.debug("遍历mapper文件:{}", entry.getName());
-                        try(InputStream fileIS = jarFile.getInputStream(entry);
-                            BufferedReader brFile = new BufferedReader(new InputStreamReader(fileIS))) {
-                            readSqlFile(subMapper, path, entry.getName().substring(templateDir.length()+1), brFile);
-                        }
-                    }
-                }
+            if(path.endsWith(".jar") && !path.contains("sql-engine")) {
+              scanDirInJar(path, TEMPLATE_DIR, subMapper);
             }
 
-            try (InputStream pathIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(templateDir);
-                 BufferedReader br = new BufferedReader(new InputStreamReader(pathIS))) {
-                for (String filename : br.lines().collect(Collectors.toList())) {
-                    if (!filename.endsWith(DEFAULT_FILE_TYPE)) {
-                        continue;
-                    }
+          scanDirInResource(TEMPLATE_DIR, subMapper);
 
-                    try(InputStream fileIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(templateDir + "/" + filename);
-                        BufferedReader brFile = new BufferedReader(new InputStreamReader(fileIS))) {
-
-                        readSqlFile(subMapper, templateDir, filename, brFile);
-                    }
-                }
-            }
-
-            // 全部做好之后, 统一替换掉subGrammar
+          // 全部做好之后, 统一替换掉subGrammar
             if (!subMapper.isEmpty()) {
                 for(List<Grammar> grammars : mapper.values()){
                     Convertor.replaceSubTemp(grammars, subMapper);
@@ -77,7 +54,41 @@ public class SqlTemplate {
         }
     }
 
-    private static void readSqlFile(Map<String, List<Grammar>> subMapper, String path, String filename, BufferedReader brFile) throws IOException {
+  private static void scanDirInJar(String path, String templateDir, Map<String, List<Grammar>> subMapper) throws IOException {
+    JarFile jarFile = new JarFile(path);
+    Enumeration<JarEntry> dd = jarFile.entries();
+    while (dd.hasMoreElements()) {
+        JarEntry entry = dd.nextElement();
+        if(!entry.isDirectory() && entry.getName().startsWith(templateDir)) {
+            log.debug("遍历mapper文件:{}", entry.getName());
+            try(InputStream fileIS = jarFile.getInputStream(entry);
+                BufferedReader brFile = new BufferedReader(new InputStreamReader(fileIS))) {
+                readSqlFile(subMapper, path, entry.getName().substring(templateDir.length()+1), brFile);
+            }
+        } else if (entry.isDirectory()) {
+          scanDirInJar(path + "/" + entry.getName(), templateDir + "/" + entry.getName(), subMapper);
+        }
+    }
+  }
+
+  private static void scanDirInResource(String templateDir, Map<String, List<Grammar>> subMapper) throws IOException {
+    try (InputStream pathIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(templateDir);
+         BufferedReader br = new BufferedReader(new InputStreamReader(pathIS))) {
+        for (String filename : br.lines().collect(Collectors.toList())) {
+            if (!filename.endsWith(DEFAULT_FILE_TYPE)) {
+                scanDirInResource(templateDir + "/" + filename, subMapper);
+                continue;
+            }
+
+            try(InputStream fileIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(templateDir + "/" + filename);
+                BufferedReader brFile = new BufferedReader(new InputStreamReader(fileIS))) {
+                readSqlFile(subMapper, templateDir, filename, brFile);
+            }
+        }
+    }
+  }
+
+  private static void readSqlFile(Map<String, List<Grammar>> subMapper, String path, String filename, BufferedReader brFile) throws IOException {
         String fileName = filename.substring(0, filename.length() - DEFAULT_FILE_TYPE.length());
         String line;
 
