@@ -65,8 +65,6 @@ public class SqlTemplate {
                 BufferedReader brFile = new BufferedReader(new InputStreamReader(fileIS))) {
                 readSqlFile(subMapper, path, entry.getName().substring(templateDir.length()+1), brFile);
             }
-        } else if (entry.isDirectory()) {
-          scanDirInJar(path + "/" + entry.getName(), templateDir + "/" + entry.getName(), subMapper);
         }
     }
   }
@@ -113,7 +111,7 @@ public class SqlTemplate {
                     throw new SqlEngineException("解析错误:"+path+"/"+filename+":"+line);
                 }
 
-                String key = fileName.concat(".").concat(name);
+                String key = fileName.replace("base/", "").concat(".").concat(name);
                 log.debug("SQL template load " + key);
 
                 contextBuilder.deleteCharAt(contextBuilder.length() - 1);

@@ -23,6 +23,7 @@ public class Tester {
         System.out.println(SqlTemplate.generateSQL("test.testFor", params));
         System.out.println(SqlTemplate.generateSQL("test.testSubMain", params));
         System.out.println(SqlTemplate.generateSQL("test.testNesting", params));
+        System.out.println(SqlTemplate.generateSQL("ConfigBase.one", params));
 
         /*Date begin = new Date();
         // 执行性能测试时, 请关闭debug log
