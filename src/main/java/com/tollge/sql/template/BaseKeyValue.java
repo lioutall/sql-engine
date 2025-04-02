@@ -40,4 +40,12 @@ public class BaseKeyValue {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "BaseKeyValue{" +
+                "baseKey=" + baseKey +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

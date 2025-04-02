@@ -42,4 +42,11 @@ public class Tester {
         params.put("list", Arrays.asList("1","1a","1b"));
         System.out.println(SqlTemplate.generateSQL("test.testSome", params));
     }
+
+  @Test
+  public void testM() {
+    Map<String, Object> params = new HashMap<>();
+    params.put("b", "bbb");
+    System.out.println(SqlTemplate.generateSQL("test.testM", params));
+  }
 }

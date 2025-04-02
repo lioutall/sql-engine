@@ -35,4 +35,11 @@ public enum BaseKey {
      */
     protected static final BaseKey[] ALPHABET = new BaseKey[] {FOR, IF, ELSE, WITH, SUB};
 
+    protected static final BaseKey[] WITH_MARK = new BaseKey[] {FOR, IF, ELSE, WITH, SUB, MARK};
+
+    @Override
+     public String toString() {
+        return key;
+    }
+
 }

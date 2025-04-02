@@ -4,6 +4,7 @@ import com.tollge.sql.SqlEngineException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -295,6 +296,11 @@ public class Convertor {
                     result.remove(i - 1);
                     i--;
                 }
+
+              if (Arrays.stream(BaseKey.WITH_MARK).noneMatch(b -> b.equals(prebv.getBaseKey()))
+                && Arrays.stream(BaseKey.WITH_MARK).noneMatch(b -> b.equals(aftbv.getBaseKey()))) {
+                result.get(i).setBaseKey(BaseKey.TEXT);
+              }
             }
         }
 

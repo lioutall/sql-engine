@@ -63,3 +63,13 @@ and n.modify_time > to_timestamp(#a#, ?sub test.dateformat sub?)
 if?
 
 ```
+
+## testM
+> 测试嵌套
+```sql
+select * from tab where 1=1
+?if b='bbb' ??
+and jsonb_path_exists(b, '$[*] ? (@.id == 1)')
+if?
+
+```
