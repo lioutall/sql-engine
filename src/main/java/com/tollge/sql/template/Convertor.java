@@ -297,9 +297,8 @@ public class Convertor {
                     i--;
                 }
 
-              if (Arrays.stream(BaseKey.WITH_MARK).noneMatch(b -> b.equals(prebv.getBaseKey()))
-                && Arrays.stream(BaseKey.WITH_MARK).noneMatch(b -> b.equals(aftbv.getBaseKey()))) {
-                result.get(i).setBaseKey(BaseKey.TEXT);
+              if (BaseKey.BLANK == prebv.getBaseKey() && BaseKey.BLANK == aftbv.getBaseKey()) {
+                bv.setBaseKey(BaseKey.TEXT);
               }
             }
         }
