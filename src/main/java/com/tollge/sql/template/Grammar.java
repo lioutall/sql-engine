@@ -226,8 +226,13 @@ public abstract class Grammar {
 
         @Override
         public void string(StringBuilder sb, List<Object> params, Map<String, Object> inputs) {
+          if ("$".equals(inputs.get("sql_engine_mode"))) {
+            sb.append("$").append(params.size()+1);
+            params.add(inputs.get(key));
+          } else {
             sb.append(REPLACE);
             params.add(inputs.get(key));
+          }
         }
     }
 

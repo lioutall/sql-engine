@@ -1,10 +1,7 @@
 import com.tollge.sql.SqlTemplate;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author toyer
@@ -19,11 +16,11 @@ public class Tester {
         params.put("b", "bbb");
         params.put("c", "c");
         params.put("list", Arrays.asList("1","1a","1b"));
-        System.out.println(SqlTemplate.generateSQL("test.testIf", params));
-        System.out.println(SqlTemplate.generateSQL("test.testFor", params));
-        System.out.println(SqlTemplate.generateSQL("test.testSubMain", params));
-        System.out.println(SqlTemplate.generateSQL("test.testNesting", params));
-        System.out.println(SqlTemplate.generateSQL("ConfigBase.one", params));
+        System.out.println("test.testIf\n" + SqlTemplate.generateSQL("test.testIf", params));
+        System.out.println("test.testFor\n" + SqlTemplate.generateSQL("test.testFor", params));
+        System.out.println("test.testSubMain\n" + SqlTemplate.generateSQL("test.testSubMain", params));
+        System.out.println("test.testNesting\n" +SqlTemplate.generateSQL("test.testNesting", params));
+        System.out.println("ConfigBase.one" + SqlTemplate.generateSQL("ConfigBase.one", params));
 
         /*Date begin = new Date();
         // 执行性能测试时, 请关闭debug log

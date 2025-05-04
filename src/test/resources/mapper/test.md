@@ -35,7 +35,7 @@ select * from tab where 1=1
 > 测试嵌套
 ```sql
 select * from tab where 1=1
-?if b='bb' ??
+?if b='bbb' ??
 and b = #b#
 ?if c='c' ??
 and b = #c#

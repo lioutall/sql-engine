@@ -158,6 +158,24 @@ public class SqlTemplate {
 
         return sqlSession;
     }
+
+  public static SqlSession generateSQL2(String key, Map<String, Object> inputs) {
+    StringBuilder sqlSb = new StringBuilder();
+    List<Object> params = new ArrayList<>();
+
+    List<Grammar> grammars = mapper.get(key);
+
+    for (Grammar grammar : grammars) {
+      grammar.string(sqlSb, params, inputs);
+    }
+
+    SqlSession sqlSession = new SqlSession(sqlSb.toString());
+    sqlSession.setParams(params);
+
+    if (log.isDebugEnabled()) {
+      log.debug(sqlSession.toString());
+    }
+
+    return sqlSession;
+  }
 }
-
-
